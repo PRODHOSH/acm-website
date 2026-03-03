@@ -89,13 +89,13 @@
             </ul>
         </nav>
         <!-- NEWS TICKER -->
-        <div class="news-ticker">
+        <a href="http://vitchennai.acm.org/join/membership" class="news-ticker" aria-label="Go to membership page">
             <div class="news-ticker-content">
                 📢 Membership is now OPEN! Become a member of the ACM Student
                 Chapter VIT Chennai today. Join us to advance computing as a
                 science and profession! 🚀
             </div>
-        </div>
+        </a>
         <!-- IMMERSIVE HERO SECTION -->
         <header class="hero hero-parallax">
             <img
@@ -126,49 +126,52 @@
         </header>
         <!-- RECRUITMENT BANNER -->
         <section
-            class="section-padding reveal"
+            class="section-padding reveal membership-banner"
             style="background: var(--gold-primary)"
         >
-            <div class="container text-center">
+            <div class="container membership-banner-inner text-center">
                 <h2
-                    class="section-title animate-fade-up"
+                    class="section-title membership-reveal-item"
                     style="color: var(--midnight-navy)"
                 >
                     Join Our Ranks!
                 </h2>
-                <p
-                    class="animate-fade-up delay-100"
-                    style="
-                        color: var(--deep-slate);
-                        font-size: 1.2rem;
-                        margin: 1.5rem 0;
-                    "
-                >
-                    We are actively recruiting passionate and driven individuals
-                    to join the ACM Student Chapter VIT Chennai. If you're eager
-                    to make a mark in the tech community and gain invaluable
-                    experience, this is your chance!
+                <p class="membership-tagline membership-reveal-item">
+                    Step into a thriving tech community where ideas turn into impact. As a member of ACM Student Chapter VIT Chennai, you’ll gain hands-on experience, expand your network, and unlock opportunities designed to accelerate your journey in technology.
                 </p>
+                <div class="membership-perks-wrap membership-reveal-item">
+                    <div class="membership-perks-track">
+                        <div class="perks-set">
+                            <span class="perk-item"><i class="fas fa-laptop-code"></i> Workshops & hands-on learning</span>
+                            <span class="perk-item"><i class="fas fa-trophy"></i> Hackathons & competitions</span>
+                            <span class="perk-item"><i class="fas fa-network-wired"></i> Industry networking</span>
+                            <span class="perk-item"><i class="fas fa-flask"></i> Research opportunities</span>
+                            <span class="perk-item"><i class="fas fa-calendar-star"></i> Exclusive events</span>
+                            <span class="perk-item"><i class="fas fa-users"></i> Mentorship & guidance</span>
+                            <span class="perk-item"><i class="fas fa-book"></i> ACM resources & publications</span>
+                            <span class="perk-item"><i class="fas fa-briefcase"></i> Career support</span>
+                        </div>
+                        <div class="perks-set" aria-hidden="true">
+                            <span class="perk-item"><i class="fas fa-laptop-code"></i> Workshops & hands-on learning</span>
+                            <span class="perk-item"><i class="fas fa-trophy"></i> Hackathons & competitions</span>
+                            <span class="perk-item"><i class="fas fa-network-wired"></i> Industry networking</span>
+                            <span class="perk-item"><i class="fas fa-flask"></i> Research opportunities</span>
+                            <span class="perk-item"><i class="fas fa-calendar-star"></i> Exclusive events</span>
+                            <span class="perk-item"><i class="fas fa-users"></i> Mentorship & guidance</span>
+                            <span class="perk-item"><i class="fas fa-book"></i> ACM resources & publications</span>
+                            <span class="perk-item"><i class="fas fa-briefcase"></i> Career support</span>
+                        </div>
+                    </div>
+                </div>
                 <a
                     href="http://vitchennai.acm.org/join/membership"
-                    class="btn-luxury animate-fade-up delay-200"
+                    class="btn-luxury membership-reveal-item membership-btn"
                     style="
                         background-color: var(--void-black);
                         color: var(--gold-primary);
                         border-color: var(--dark-navy-alt);
-                        margin-right: 4rem;
                     "
-                    >Apply for </br> Membership</a
-                ><a
-                    href="http://vitchennai.acm.org/join"
-                    class="btn-luxury animate-fade-up delay-200"
-                    style="
-                        background-color: var(--void-black);
-                        color: var(--gold-primary);
-                        border-color: var(--dark-navy-alt);
-                        margin-left: 4rem;
-                    "
-                    >Apply for </br> Club</a
+                    >Apply for <br /> Membership</a
                 >
             </div>
         </section>
@@ -258,6 +261,11 @@
                 </div>
 
                 <div class="event-list">
+                    <a href="events/dsa_bootcamp.html" class="event-row">
+                        <span class="event-date">Mar, 2026</span>
+                        <h3 class="event-title">DSA Bootcamp</h3>
+                        <span class="event-arrow">→</span>
+                    </a>
                     <a href="events/hour_of_ai.html" class="event-row">
                         <span class="event-date">Dec 11, 2025</span>
                         <h3 class="event-title">Hour of AI</h3>
