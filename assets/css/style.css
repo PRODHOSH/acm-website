@@ -2048,6 +2048,7 @@ html {
 
 /* NEWS TICKER */
 .news-ticker {
+    display: block;
     background: var(--gold-primary);
     color: var(--void-black);
     padding: 10px 0;
@@ -2056,6 +2057,8 @@ html {
     width: 100%;
     position: relative;
     z-index: 100;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .news-ticker-content {
@@ -2079,5 +2082,167 @@ html {
     }
     100% {
         transform: translateX(-100%);
+    }
+}
+
+/* MEMBERSHIP BANNER – Centred content, scrolling perks, scroll reveal */
+.membership-banner {
+    overflow: hidden;
+}
+
+.membership-banner.section-padding {
+    padding: 3.5rem 0;
+}
+
+.membership-banner-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.membership-banner-inner .section-title {
+    margin-bottom: 1rem;
+}
+
+/* Main text centred */
+.membership-tagline {
+    max-width: 720px;
+    margin: 0 auto 1.25rem;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--deep-slate);
+    text-align: center;
+}
+
+/* Scroll-in transition: content starts hidden, reveals when section is in view */
+.membership-banner .membership-reveal-item {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.55s var(--ease-luxury), transform 0.55s var(--ease-luxury);
+}
+
+.membership-banner.is-visible .section-title.membership-reveal-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0s;
+}
+
+.membership-banner.is-visible .membership-tagline.membership-reveal-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.12s;
+}
+
+.membership-banner.is-visible .membership-perks-wrap.membership-reveal-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.24s;
+}
+
+.membership-banner.is-visible .membership-btn.membership-reveal-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.36s;
+}
+
+.membership-perks-wrap {
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 0;
+    position: relative;
+}
+
+.membership-perks-wrap::before,
+.membership-perks-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.membership-perks-wrap::before {
+    left: 0;
+    background: linear-gradient(to right, var(--gold-primary), transparent);
+}
+
+.membership-perks-wrap::after {
+    right: 0;
+    background: linear-gradient(to left, var(--gold-primary), transparent);
+}
+
+.membership-perks-track {
+    display: flex;
+    width: max-content;
+    animation: membership-perks-scroll 35s linear infinite;
+}
+
+.perks-set {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-shrink: 0;
+    padding: 0 0.5rem;
+}
+
+
+.perk-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    color: var(--midnight-navy);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem;
+    background: rgba(2, 12, 27, 0.08);
+    border-radius: 999px;
+    border: 1px solid rgba(2, 12, 27, 0.15);
+    flex-shrink: 0;
+    transition: background 0.25s var(--ease-luxury), transform 0.25s var(--ease-luxury);
+}
+
+.membership-btn {
+    margin-top: 1.25rem;
+}
+
+.perk-item i {
+    color: var(--deep-slate);
+    font-size: 0.9rem;
+}
+
+.perk-item:hover {
+    background: rgba(2, 12, 27, 0.14);
+    transform: scale(1.04);
+}
+
+@keyframes membership-perks-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .perks-set {
+        gap: 1rem;
+    }
+    .membership-perks-track {
+        animation-duration: 45s;
+    }
+    .perk-item {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
+    }
+    .membership-perks-wrap::before,
+    .membership-perks-wrap::after {
+        width: 40px;
     }
 }
