@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server Surfers – CTF Cybersecurity Challenge | ACM VIT Chennai</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #04060f;
+      --bg2: #080d1a;
+      --bg3: #0c1224;
+      --gold: #f5c518;
+      --gold-dim: #c9a010;
+      --blue: #3a7bd5;
+      --blue-bright: #5a9bf5;
+      --purple: #9b4dca;
+      --green: #2ecc71;
+      --text: #c8daf0;
+      --muted: #5a7a9a;
+      --border: #1a2e52;
+      --border2: #243858;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ───────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--blue);
+      border-radius: 3px;
+    }
+
+    /* ── GRID OVERLAY ────────────────────────────── */
+    .grid-bg {
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(30, 52, 100, 0.18) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(30, 52, 100, 0.18) 60px);
+    }
+
+    /* ── NOISE TEXTURE ───────────────────────────── */
+    .noise::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: .5;
+    }
+
+    /* ── ANIMATIONS ──────────────────────────────── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes pulseGold {
+
+      0%,
+      100% {
+        text-shadow: 0 0 20px rgba(245, 197, 24, .5), 0 0 50px rgba(245, 197, 24, .2)
+      }
+
+      50% {
+        text-shadow: 0 0 40px rgba(245, 197, 24, .8), 0 0 80px rgba(245, 197, 24, .4)
+      }
+    }
+
+    @keyframes scanline {
+      0% {
+        transform: translateY(-100%)
+      }
+
+      100% {
+        transform: translateY(100vh)
+      }
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 12px rgba(58, 123, 213, .3)
+      }
+
+      50% {
+        box-shadow: 0 0 28px rgba(58, 123, 213, .7)
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg)
+      }
+
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% center
+      }
+
+      100% {
+        background-position: 200% center
+      }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp .7s ease forwards;
+    }
+
+    .d1 {
+      animation-delay: .1s;
+    }
+
+    .d2 {
+      animation-delay: .25s;
+    }
+
+    .d3 {
+      animation-delay: .4s;
+    }
+
+    .d4 {
+      animation-delay: .55s;
+    }
+
+    .d5 {
+      animation-delay: .7s;
+    }
+
+    /* ── NAVBAR ──────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(4, 6, 15, .85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .nav-logo-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--blue-bright);
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, #1e4db7, #2962c8);
+      color: #fff !important;
+      border: 1px solid #4a80e8;
+      border-radius: 4px;
+      padding: 8px 18px !important;
+      font-family: 'Orbitron', sans-serif !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      letter-spacing: 2px !important;
+      transition: all .2s !important;
+    }
+
+    .nav-cta:hover {
+      background: linear-gradient(135deg, #2962c8, #3a7bd5) !important;
+      color: #fff !important;
+      box-shadow: 0 0 18px rgba(41, 98, 200, .5);
+    }
+
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 1px;
+      transition: .3s;
+    }
+
+    /* ── HERO ─────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding: 100px 20px 60px;
+    }
+
+    .hero-scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(58, 123, 213, .4), transparent);
+      animation: scanline 8s linear infinite;
+      pointer-events: none;
+    }
+
+    /* radial glow behind title */
+    .hero-glow {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(41, 98, 200, .2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .p1 {
+      width: 4px;
+      height: 4px;
+      background: var(--gold);
+      top: 20%;
+      left: 15%;
+      animation-delay: 0s;
+      opacity: .6;
+    }
+
+    .p2 {
+      width: 3px;
+      height: 3px;
+      background: var(--blue);
+      top: 35%;
+      left: 80%;
+      animation-delay: 1s;
+      opacity: .5;
+    }
+
+    .p3 {
+      width: 5px;
+      height: 5px;
+      background: var(--purple);
+      top: 65%;
+      left: 12%;
+      animation-delay: 2s;
+      opacity: .4;
+    }
+
+    .p4 {
+      width: 3px;
+      height: 3px;
+      background: var(--green);
+      top: 75%;
+      left: 85%;
+      animation-delay: 0.5s;
+      opacity: .5;
+    }
+
+    .p5 {
+      width: 4px;
+      height: 4px;
+      background: var(--gold);
+      top: 50%;
+      left: 5%;
+      animation-delay: 1.5s;
+      opacity: .3;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(58, 123, 213, .15);
+      border: 1px solid rgba(58, 123, 213, .4);
+      border-radius: 40px;
+      padding: 6px 20px;
+      margin-bottom: 28px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--blue-bright);
+      letter-spacing: 3px;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(56px, 12vw, 96px);
+      font-weight: 900;
+      line-height: .95;
+      color: var(--gold);
+      animation: pulseGold 3s ease-in-out infinite;
+      margin-bottom: 16px;
+      letter-spacing: 3px;
+    }
+
+    .hero-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    /* info chips */
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 44px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(12, 18, 36, .8);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 10px 18px;
+    }
+
+    .chip-icon {
+      font-size: 15px;
+      color: var(--blue);
+      width: 18px;
+      text-align: center;
+    }
+
+    .chip-icon i {
+      display: block;
+    }
+
+    .chip-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .chip-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-left: 4px;
+    }
+
+    .hero-btns {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, #1e4db7, #2962c8);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-decoration: none;
+      padding: 15px 40px;
+      border-radius: 6px;
+      border: 1px solid #4a80e8;
+      transition: all .25s;
+      animation: glow 2.5s ease-in-out infinite;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(41, 98, 200, .5);
+    }
+
+    .btn-outline {
+      display: inline-block;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-decoration: none;
+      padding: 15px 40px;
+      border-radius: 6px;
+      border: 1px solid var(--border2);
+      transition: all .25s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--blue);
+      color: var(--blue-bright);
+      transform: translateY(-2px);
+    }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: .4;
+    }
+
+    .scroll-hint span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 3px;
+    }
+
+    .scroll-arrow {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(180deg, var(--muted), transparent);
+      animation: float 1.5s ease-in-out infinite;
+    }
+
+    /* ── SECTIONS BASE ───────────────────────────── */
+    section {
+      padding: 90px 20px;
+    }
+
+    .section-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--blue);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-tag::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--blue);
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 14px;
+      line-height: 1.1;
+    }
+
+    .section-title span {
+      color: var(--gold);
+    }
+
+    .section-lead {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.7;
+    }
+
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--blue));
+      border-radius: 2px;
+      margin: 20px 0 40px;
+    }
+
+    /* ── ABOUT SECTION ───────────────────────────── */
+    #about {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color .3s, transform .3s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--blue);
+      transform: translateY(-3px);
+    }
+
+    .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .stat-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-top: 4px;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+
+    .hex-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .hex-item {
+      aspect-ratio: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: all .3s;
+      cursor: default;
+      color: var(--muted);
+    }
+
+    .hex-item.gold i {
+      color: var(--gold);
+    }
+
+    .hex-item.blue i {
+      color: var(--blue-bright);
+    }
+
+    .hex-item i {
+      color: var(--muted);
+    }
+
+    .hex-item:hover {
+      border-color: var(--gold);
+      background: rgba(245, 197, 24, .07);
+      transform: scale(1.05);
+    }
+
+    .hex-item.gold {
+      border-color: rgba(245, 197, 24, .3);
+      background: rgba(245, 197, 24, .05);
+    }
+
+    .hex-item.blue {
+      border-color: rgba(58, 123, 213, .3);
+      background: rgba(58, 123, 213, .05);
+    }
+
+    /* ── HERO TITLE IMAGE ────────────────────────── */
+    .hero-title-img-wrap {
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    #hero-title-img {
+      max-width: 560px;
+      width: 90vw;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 0 28px rgba(245, 197, 24, .45));
+    }
+
+    #poster {
+      background: var(--bg);
+    }
+
+    .poster-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .poster-frame {
+      position: relative;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    /* Corner decorations */
+    .poster-frame::before,
+    .poster-frame::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: var(--gold);
+      border-style: solid;
+      z-index: 2;
+    }
+
+    .poster-frame::before {
+      top: -3px;
+      left: -3px;
+      border-width: 3px 0 0 3px;
+    }
+
+    .poster-frame::after {
+      bottom: -3px;
+      right: -3px;
+      border-width: 0 3px 3px 0;
+    }
+
+    .poster-frame-inner {
+      position: relative;
+    }
+
+    .poster-frame-inner::before,
+    .poster-frame-inner::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: var(--gold);
+      border-style: solid;
+      z-index: 2;
+    }
+
+    .poster-frame-inner::before {
+      top: -3px;
+      right: -3px;
+      border-width: 3px 3px 0 0;
+    }
+
+    .poster-frame-inner::after {
+      bottom: -3px;
+      left: -3px;
+      border-width: 0 0 3px 3px;
+    }
+
+    .poster-upload-zone {
+      width: 100%;
+      min-height: 640px;
+      background: var(--bg3);
+      border: 2px dashed var(--border2);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all .3s;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .poster-upload-zone:hover {
+      border-color: var(--blue);
+      background: rgba(58, 123, 213, .04);
+    }
+
+    .poster-upload-zone.has-image {
+      border-style: solid;
+      border-color: var(--gold);
+      padding: 0;
+      min-height: 0;
+    }
+
+    #poster-img {
+      width: 100%;
+      height: auto;
+      display: none;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    .upload-placeholder {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: .4;
+      color: var(--blue);
+    }
+
+    .upload-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .upload-hint {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--border2);
+      letter-spacing: 1px;
+    }
+
+    .upload-btn {
+      margin-top: 20px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--blue-bright);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      padding: 10px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .upload-btn:hover {
+      border-color: var(--blue);
+      background: rgba(58, 123, 213, .1);
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    .poster-caption {
+      text-align: center;
+      max-width: 480px;
+    }
+
+    .poster-caption h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .poster-caption p {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    /* ── SPEAKER SECTION ─────────────────────────── */
+    #speaker {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .speaker-card {
+      background: linear-gradient(135deg, var(--bg3), #0e1a30);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      max-width: 800px;
+    }
+
+    .speaker-visual {
+      background: linear-gradient(135deg, #0a1628, #0d2040);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      gap: 16px;
+    }
+
+    .speaker-avatar {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #1e3a6e, #2952a3);
+      border-radius: 50%;
+      border: 3px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      color: var(--blue-bright);
+      animation: float 4s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(58, 123, 213, .3);
+    }
+
+    .speaker-org {
+      background: rgba(58, 123, 213, .15);
+      border: 1px solid rgba(58, 123, 213, .3);
+      border-radius: 4px;
+      padding: 5px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--blue-bright);
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .speaker-info {
+      padding: 36px;
+    }
+
+    .speaker-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--blue);
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+    }
+
+    .speaker-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .speaker-role {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--blue);
+      letter-spacing: 1px;
+      margin-bottom: 22px;
+    }
+
+    .speaker-bio {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .speaker-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(12, 18, 36, .8);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 5px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    /* ── SCHEDULE SECTION ────────────────────────── */
+    #schedule {
+      background: var(--bg);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--blue), var(--gold), var(--purple), transparent);
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -38px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid;
+      background: var(--bg);
+    }
+
+    .timeline-dot.blue {
+      border-color: var(--blue);
+      box-shadow: 0 0 8px rgba(58, 123, 213, .5);
+    }
+
+    .timeline-dot.gold {
+      border-color: var(--gold);
+      box-shadow: 0 0 8px rgba(245, 197, 24, .5);
+    }
+
+    .timeline-dot.green {
+      border-color: var(--green);
+      box-shadow: 0 0 8px rgba(46, 204, 113, .5);
+    }
+
+    .timeline-dot.purple {
+      border-color: var(--purple);
+      box-shadow: 0 0 8px rgba(155, 77, 202, .5);
+    }
+
+    .timeline-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px 24px;
+      transition: border-color .3s, transform .2s;
+    }
+
+    .timeline-card:hover {
+      transform: translateX(4px);
+    }
+
+    .timeline-card.blue {
+      border-left: 3px solid var(--blue);
+    }
+
+    .timeline-card.gold {
+      border-left: 3px solid var(--gold);
+    }
+
+    .timeline-card.green {
+      border-left: 3px solid var(--green);
+    }
+
+    .timeline-card.purple {
+      border-left: 3px solid var(--purple);
+    }
+
+    .timeline-time {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .timeline-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .timeline-duration {
+      display: inline-block;
+      margin-top: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--blue);
+      letter-spacing: 2px;
+    }
+
+    /* KIPS stages */
+    .kips-stages {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .kips-stage {
+      background: rgba(8, 13, 26, .6);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .kips-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .kips-num.b {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .kips-num.g {
+      background: var(--gold);
+      color: #0a0f1e;
+    }
+
+    .kips-num.gr {
+      background: var(--green);
+      color: #0a0f1e;
+    }
+
+    .kips-stage-text h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .kips-stage-text p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .kips-stage-text .dur {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--gold);
+      margin-top: 4px;
+    }
+
+    /* ── REGISTER SECTION ────────────────────────── */
+    #register {
+      background: linear-gradient(135deg, #06101e 0%, #0a1830 50%, #06101e 100%);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .register-glow {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(58, 123, 213, .15) 0%, transparent 70%);
+      margin: 0 auto 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid rgba(58, 123, 213, .1);
+    }
+
+    .register-inner-glow {
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(245, 197, 24, .1) 0%, transparent 70%);
+      border-radius: 50%;
+      border: 1px solid rgba(245, 197, 24, .15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 58px;
+      color: var(--gold);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .register-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .register-sub {
+      font-size: 17px;
+      color: var(--muted);
+      margin-bottom: 36px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 48px 20px 24px;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .footer-brand-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .footer-brand-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .footer-desc {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .footer-col h4 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--blue);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-col ul li a {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--blue-bright);
+    }
+
+    .footer-col ul li a::before {
+      content: '›';
+      color: var(--border2);
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--border2);
+      letter-spacing: 1px;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer-socials a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: color .2s;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .footer-socials a:hover {
+      color: var(--blue-bright);
+      border-color: var(--blue);
+    }
+
+    /* color bar */
+    .color-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #1e3a8a, #2962c8, var(--gold), #2962c8, #1e3a8a);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width:860px) {
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .speaker-card {
+        grid-template-columns: 1fr;
+      }
+
+      .speaker-visual {
+        padding: 30px;
+        flex-direction: row;
+        gap: 20px;
+        justify-content: flex-start;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+    }
+
+    @media (max-width:560px) {
+      section {
+        padding: 60px 16px;
+      }
+
+      .chip {
+        padding: 8px 12px;
+      }
+
+      .hero-chips {
+        gap: 8px;
+      }
+
+      .about-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hex-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* ── INTERSECTION OBSERVER TARGETS ───────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════ -->
+  <nav>
+    <a href="" class="nav-logo">
+      <div>
+        <div class="nav-logo-text">SERVER SURFERS</div>
+        <div class="nav-logo-sub">ACM · VIT CHENNAI</div>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#poster">Poster</a></li>
+      <li><a href="#speaker">Speaker</a></li>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="https://eventhubcc.vit.ac.in/EventHub/" class="nav-cta" target="_blank">REGISTER</a>
+      </li>
+    </ul>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu"
+    style="display:none;position:fixed;top:64px;left:0;right:0;z-index:99;background:rgba(4,6,15,.97);border-bottom:1px solid var(--border);padding:20px;">
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+      <li><a href="#about" onclick="toggleMenu()"
+          style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--muted);text-decoration:none;display:block;padding:12px 16px;border-radius:4px;letter-spacing:2px;">ABOUT</a>
+      </li>
+      <li><a href="#poster" onclick="toggleMenu()"
+          style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--muted);text-decoration:none;display:block;padding:12px 16px;border-radius:4px;letter-spacing:2px;">POSTER</a>
+      </li>
+      <li><a href="#speaker" onclick="toggleMenu()"
+          style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--muted);text-decoration:none;display:block;padding:12px 16px;border-radius:4px;letter-spacing:2px;">SPEAKER</a>
+      </li>
+      <li><a href="#schedule" onclick="toggleMenu()"
+          style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--muted);text-decoration:none;display:block;padding:12px 16px;border-radius:4px;letter-spacing:2px;">SCHEDULE</a>
+      </li>
+      <li><a href="https://eventhubcc.vit.ac.in/EventHub/" target="_blank"
+          style="font-family:'Orbitron',sans-serif;font-size:14px;color:#fff;text-decoration:none;display:block;padding:12px 16px;border-radius:4px;background:linear-gradient(135deg,#1e4db7,#2962c8);margin-top:8px;text-align:center;letter-spacing:2px;">REGISTER
+          NOW</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+  <section id="hero" class="grid-bg noise">
+    <div class="hero-scanline"></div>
+    <div class="hero-glow"></div>
+
+    <!-- Particles -->
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
+
+    <div class="hero-inner">
+      <div class="hero-badge fade-up d1">◈ ACM STUDENT CHAPTER · VIT CHENNAI ◈</div>
+
+      <!-- Title PNG — replace href with your image URL -->
+      <div class="hero-title-img-wrap fade-up d2">
+        <img id="hero-title-img" src="../images/server-surfer_logo.png" alt="Server Surfers" />
+      </div>
+
+      <div class="hero-subtitle fade-up d3">Capture The Flag · Cybersecurity Challenge</div>
+
+      <div class="hero-chips fade-up d4">
+        <div class="chip">
+          <span class="chip-icon"><i class="fa-regular fa-calendar"></i></span>
+          <span class="chip-label">DATE</span>
+          <span class="chip-val">24 MARCH 2026</span>
+        </div>
+        <div class="chip">
+          <span class="chip-icon"><i class="fa-solid fa-location-dot"></i></span>
+          <span class="chip-label">VENUE</span>
+          <span class="chip-val">VOC AUDITORIUM, VIT</span>
+        </div>
+        <div class="chip">
+          <span class="chip-icon"><i class="fa-regular fa-clock"></i></span>
+          <span class="chip-label">TIME</span>
+          <span class="chip-val">9:30 AM – 5:30 PM</span>
+        </div>
+      </div>
+
+      <div class="hero-btns fade-up d5">
+        <a href="https://eventhubcc.vit.ac.in/EventHub/" target="_blank" class="btn-primary">Register Now
+          →</a>
+        <a href="#about" class="btn-outline">Learn More</a>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>SCROLL</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     ABOUT
+════════════════════════════════════════ -->
+  <section id="about">
+    <div class="section-wrap">
+      <div class="about-grid">
+        <div class="reveal">
+          <div class="section-tag">About the Event</div>
+          <h2 class="section-title">What is <span>Server Surfers?</span></h2>
+          <div class="divider"></div>
+          <p class="section-lead">
+            Server Surfers is a full-day immersive cybersecurity experience hosted by the ACM Student Chapter at VIT
+            Chennai. Featuring a keynote from an industry expert, a live KIPS threat simulation, and a nail-biting
+            Capture The Flag competition.
+          </p>
+          <p style="font-size:16px;color:var(--muted);margin-top:16px;line-height:1.7;">
+            Whether you're a seasoned security researcher or just beginning your journey into ethical hacking, Server
+            Surfers is designed to challenge, educate, and inspire the next generation of cybersecurity professionals.
+          </p>
+
+          <div class="about-stats">
+            <div class="stat-card">
+              <div class="stat-num">8h</div>
+              <div class="stat-label">Full Day Event</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">CTF</div>
+              <div class="stat-label">Live Competition</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">KIPS</div>
+              <div class="stat-label">Threat Simulation</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">1</div>
+              <div class="stat-label">Expert Keynote</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-visual reveal" style="transition-delay:.15s">
+          <div class="hex-grid">
+            <div class="hex-item gold"><i class="fa-solid fa-lock"></i></div>
+            <div class="hex-item blue"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="hex-item"><i class="fa-solid fa-laptop-code"></i></div>
+            <div class="hex-item gold"><i class="fa-solid fa-flag"></i></div>
+            <div class="hex-item"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="hex-item blue"><i class="fa-solid fa-bolt"></i></div>
+            <div class="hex-item gold"><i class="fa-solid fa-puzzle-piece"></i></div>
+            <div class="hex-item"><i class="fa-solid fa-key"></i></div>
+            <div class="hex-item blue"><i class="fa-solid fa-globe"></i></div>
+            <div class="hex-item"><i class="fa-solid fa-satellite"></i></div>
+            <div class="hex-item gold"><i class="fa-solid fa-gear"></i></div>
+            <div class="hex-item blue"><i class="fa-solid fa-crosshairs"></i></div>
+          </div>
+          <div
+            style="margin-top:16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:18px 20px;">
+            <div
+              style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--blue);letter-spacing:2px;margin-bottom:10px;">
+              // ELIGIBILITY</div>
+            <p style="font-size:15px;color:var(--muted);line-height:1.6;">Open to all students at VIT Chennai. No prior
+              experience needed — just a curiosity to break things (ethically).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     POSTER
+════════════════════════════════════════ -->
+  <section id="poster">
+    <div class="section-wrap">
+      <div style="text-align:center;margin-bottom:48px;" class="reveal">
+        <div class="section-tag" style="justify-content:center;">Event Poster</div>
+        <h2 class="section-title">Official <span>Event Poster</span></h2>
+        <div class="divider" style="margin:20px auto 0;"></div>
+      </div>
+
+      <div class="poster-container reveal" style="transition-delay:.1s">
+        <div class="poster-frame">
+          <div class="poster-frame-inner">
+            <!-- Poster image — replace href with your image URL -->
+            <img id="poster-img" src="../images/server_surfer_poster.jpeg" alt="Server Surfers Event Poster"
+              style="width:100%;height:auto;display:block;border-radius:8px;" />
+          </div>
+        </div>
+
+        <div class="poster-caption">
+          <h3>Server Surfers 2026</h3>
+          <p>Capture The Flag · Cybersecurity Challenge<br />ACM Student Chapter, VIT Chennai</p>
+          <p
+            style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--border2);margin-top:10px;letter-spacing:1px;">
+            24 MARCH 2026 · VOC AUDITORIUM</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     SPEAKER
+════════════════════════════════════════ -->
+  <section id="speaker">
+    <div class="section-wrap">
+      <div class="reveal" style="margin-bottom:40px;">
+        <div class="section-tag">Keynote Speaker</div>
+        <h2 class="section-title">Meet the <span>Expert</span></h2>
+        <div class="divider"></div>
+      </div>
+
+      <div class="speaker-card reveal" style="transition-delay:.1s">
+        <div class="speaker-visual">
+          <div class="speaker-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="speaker-org">KASPERSKY INDIA</div>
+        </div>
+        <div class="speaker-info">
+          <div class="speaker-label">▶ KEYNOTE SPEAKER</div>
+          <div class="speaker-name">ARUN<br />GANTAYAT</div>
+          <div class="speaker-role">Head of Presales, Kaspersky India</div>
+          <p class="speaker-bio">
+            Arun brings years of frontline cybersecurity expertise from one of the world's leading security companies.
+            His session will cover real-world threat landscapes, enterprise defense strategies, and what it truly takes
+            to protect digital infrastructure in an era of relentless cyber attacks.
+          </p>
+          <div class="speaker-tags">
+            <span class="tag">Threat Intelligence</span>
+            <span class="tag">Endpoint Security</span>
+            <span class="tag">Presales Strategy</span>
+            <span class="tag">Enterprise Defense</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     SCHEDULE
+════════════════════════════════════════ -->
+  <section id="schedule">
+    <div class="section-wrap">
+      <div class="reveal" style="margin-bottom:48px;">
+        <div class="section-tag">Day Schedule</div>
+        <h2 class="section-title">Event <span>Timeline</span></h2>
+        <div class="divider"></div>
+        <p class="section-lead">A packed day of learning, simulating, and competing. Here's what to expect.</p>
+      </div>
+
+      <div class="timeline reveal" style="transition-delay:.1s">
+
+        <!-- Registration -->
+        <div class="timeline-item">
+          <div class="timeline-dot blue"></div>
+          <div class="timeline-card blue">
+            <div class="timeline-time">09:30 AM</div>
+            <div class="timeline-title">Registration & Check-in</div>
+            <div class="timeline-desc">Collect your event kit and get checked in at the VOC Auditorium. Meet fellow
+              participants and grab a seat.</div>
+            <span class="timeline-duration"><i class="fa-regular fa-clock"></i> 30 min</span>
+          </div>
+        </div>
+
+        <!-- Inauguration -->
+        <div class="timeline-item">
+          <div class="timeline-dot gold"></div>
+          <div class="timeline-card gold">
+            <div class="timeline-time">10:00 AM</div>
+            <div class="timeline-title">Inauguration & Welcome Address</div>
+            <div class="timeline-desc">Opening ceremony by the ACM Chapter leads and faculty coordinators.</div>
+            <span class="timeline-duration"><i class="fa-regular fa-clock"></i> 30 min</span>
+          </div>
+        </div>
+
+        <!-- Keynote -->
+        <div class="timeline-item">
+          <div class="timeline-dot blue"></div>
+          <div class="timeline-card blue">
+            <div class="timeline-time">10:30 AM</div>
+            <div class="timeline-title">Keynote — Arun Gantayat, Kaspersky India</div>
+            <div class="timeline-desc">An expert session on real-world cybersecurity threats, enterprise security
+              posture, and the evolving cyber landscape. Interactive Q&A to follow.</div>
+            <span class="timeline-duration"><i class="fa-regular fa-clock"></i> 60 min</span>
+          </div>
+        </div>
+
+        <!-- KIPS -->
+        <div class="timeline-item">
+          <div class="timeline-dot gold"></div>
+          <div class="timeline-card gold">
+            <div class="timeline-time">11:30 AM</div>
+            <div class="timeline-title">KIPS — Kaspersky Interactive Protection Simulation</div>
+            <div class="timeline-desc">A team-based cybersecurity strategy game where you read threat news, play defense
+              cards, manage budgets, and race up the live leaderboard.</div>
+            <div class="kips-stages">
+              <div class="kips-stage">
+                <div class="kips-num b">1</div>
+                <div class="kips-stage-text">
+                  <h4>Game Rules & Housekeeping</h4>
+                  <p>Trainer explains rules; trainees follow on the big screen.</p>
+                  <div class="dur"><i class="fa-regular fa-clock"></i> 25 min</div>
+                </div>
+              </div>
+              <div class="kips-stage">
+                <div class="kips-num g">2</div>
+                <div class="kips-stage-text">
+                  <h4>Team Strategy Simulation</h4>
+                  <p>Teams pick cards to defend against threats; ranking updates each turn.</p>
+                  <div class="dur"><i class="fa-regular fa-clock"></i> 50 min</div>
+                </div>
+              </div>
+              <div class="kips-stage">
+                <div class="kips-num gr">3</div>
+                <div class="kips-stage-text">
+                  <h4>Debrief & Lessons Learned</h4>
+                  <p>Trainer reveals the ideal scenario and practical takeaways.</p>
+                  <div class="dur"><i class="fa-regular fa-clock"></i> 25 min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lunch -->
+        <div class="timeline-item">
+          <div class="timeline-dot green"></div>
+          <div class="timeline-card green">
+            <div class="timeline-time">01:30 PM</div>
+            <div class="timeline-title">Lunch Break</div>
+            <div class="timeline-desc">Fuel up and network with fellow participants.</div>
+            <span class="timeline-duration"><i class="fa-regular fa-clock"></i> 60 min</span>
+          </div>
+        </div>
+
+        <!-- CTF -->
+        <div class="timeline-item">
+          <div class="timeline-dot purple"></div>
+          <div class="timeline-card"
+            style="border-left:3px solid var(--purple);background:linear-gradient(135deg,#0e0818,#160328);">
+            <div class="timeline-time">02:30 PM</div>
+            <div class="timeline-title" style="color:var(--purple);"><i class="fa-solid fa-flag"
+                style="margin-right:8px;"></i>Capture The Flag — Live CTF Competition</div>
+            <div class="timeline-desc">The main event. Crack puzzles, exploit vulnerabilities, bypass security, and race
+              to plant your flag first. All skill levels welcome.</div>
+            <span class="timeline-duration" style="color:var(--purple);"><i class="fa-regular fa-clock"></i> 2 hrs 30
+              min</span>
+          </div>
+        </div>
+
+        <!-- Closing -->
+        <div class="timeline-item">
+          <div class="timeline-dot gold"></div>
+          <div class="timeline-card gold">
+            <div class="timeline-time">05:00 PM</div>
+            <div class="timeline-title">Results, Awards & Closing</div>
+            <div class="timeline-desc">CTF results announced, winners awarded, and closing remarks from organizers.
+            </div>
+            <span class="timeline-duration"><i class="fa-regular fa-clock"></i> 30 min</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     REGISTER CTA
+════════════════════════════════════════ -->
+  <section id="register">
+    <div class="section-wrap">
+      <div class="reveal">
+        <div class="register-glow">
+          <div class="register-inner-glow"><i class="fa-solid fa-flag"></i></div>
+        </div>
+        <h2 class="register-title">Ready to Hack?</h2>
+        <p class="register-sub">Join us on March 24 at VIT Chennai for a day of cybersecurity, competition, and
+          community.</p>
+        <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+          <a href="https://eventhubcc.vit.ac.in/EventHub/" target="_blank" class="btn-primary">Secure Your
+            Spot →</a>
+          <a href="mailto:vitcc.acmsc@vit.ac.in" class="btn-outline">Contact Us</a>
+        </div>
+        <p
+          style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--border2);margin-top:24px;letter-spacing:1px;">
+          vitcc.acmsc@vit.ac.in · vitchennai.acm.org</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-name">SERVER SURFERS</div>
+          <div class="footer-brand-sub">ACM STUDENT CHAPTER · VIT CHENNAI</div>
+          <p class="footer-desc">A Capture The Flag cybersecurity challenge organized by the ACM Student Chapter at VIT
+            Chennai. Presented in association with the Institution's Innovation Council and the Office of Student
+            Welfare.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#about">About the Event</a></li>
+            <li><a href="#speaker">Keynote Speaker</a></li>
+            <li><a href="#schedule">Schedule</a></li>
+            <li><a href="https://eventhubcc.vit.ac.in/EventHub/" target="_blank">Register</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:vitcc.acmsc@vit.ac.in">vitcc.acmsc@vit.ac.in</a></li>
+            <li><a href="https://vitchennai.acm.org" target="_blank">vitchennai.acm.org</a></li>
+            <li><a href="https://instagram.com/acm_vitcc" target="_blank">@acm_vitcc</a></li>
+          </ul>
+          <div
+            style="margin-top:20px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;">
+            <div
+              style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:6px;">
+              <i class="fa-regular fa-calendar"></i> EVENT DATE
+            </div>
+            <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--gold);">24 MARCH
+              2026</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--muted);margin-top:2px;">VOC
+              Auditorium · 9:30 AM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2026 ACM Student Chapter, VIT Chennai. All rights reserved.</div>
+        <div class="footer-socials">
+          <a href="https://instagram.com/acm_vitcc" target="_blank">Instagram</a>
+          <a href="https://vitchennai.acm.org" target="_blank">Website</a>
+          <a href="mailto:vitcc.acmsc@vit.ac.in">Email</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="color-bar"></div>
+
+  <!-- ═══════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════ -->
+  <script>
+    // Mobile menu toggle
+    function toggleMenu() {
+      const m = document.getElementById('mobile-menu');
+      m.style.display = m.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // Active nav link highlight
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 100) current = s.id;
+      });
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === `#${current}` ? 'var(--blue-bright)' : '';
+      });
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('#mobile-menu a').forEach(a => {
+      a.addEventListener('click', () => {
+        document.getElementById('mobile-menu').style.display = 'none';
+      });
+    });
+  </script>
+
+</body>
+
+</html>
